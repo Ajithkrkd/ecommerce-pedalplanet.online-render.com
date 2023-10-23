@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html  lang="en" xmlns:th = "https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Ashion Template">
+    <meta name="keywords" content="Ashion, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>home</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Cookie&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="/css/index.css">
+</head>
+
+<body>
+   
+
+    <div th:replace="fragments/header::header"></div>
+
+    <!-- Categories Section Begin -->
+    <section class="categories">
+        <div class="container-fluid">
+            <div class="row">
+
+                <div class="col p-1">
+                    <div class="image-container">
+                        <img class="img-fluid" th:src="@{${'/banner/'+ ActiveBanner.imagePath}}"  alt="">
+                        <a class="" th:href="@{${ActiveBanner.url}}">
+                            <div class="image-text">
+                                <h3>
+                                    "Eco-Friendly Commuting: Explore Electric Vehicles!"</h3>
+                                <p>"Take A Look"</p>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+                <!-- Add similar code for other images -->
+            </div>
+        </div>
+    </section>
+
+    <h2 class="text-center mt-5">EXPLORE NEW</h2>
+
+    <!-- Categories Section End -->
+<!-- Product Section Begin -->
+    <section class="product spade">
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-4 col-sm-6 mix women card my-2 " th:each="product, iStat : ${availableproducts}">
+                    <div class="product__item">
+                        <div class="product__item__pic set-bg h-100">
+                            <a th:href="@{/shop/single-product/{id}(id=${product.id})}">
+                                <th:block th:if="${not #lists.isEmpty(product.images)}">
+                                    <!-- Display the first image for the product -->
+                                    <img th:src="@{${'/Images/product/' + product.images[0].imagePath}}" alt="Product Image">
+                                </th:block>
+                            </a>
+                        </div>
+                        <div class="product__item__text">
+                            <!-- Apply styles for the product name and price -->
+                            <h6><a href="#" th:text="${product.name}" style="font-weight: bold;">Buttons tweed blazer</a></h6>
+                            <span style="font-size: 24px; font-weight: bold;">RS . <span style="font-size: 20px;" th:text="${product.price}"></span></span>
+
+                        </div>
+                        <div class="col text-center px-2 py-2 ">
+
+                            <div class="col text-center px-2 py-2">
+                                <th:block th:if="${product.inWishList}">
+                                    <span class="btn btn-success w-100">WISHLISTED</span>
+                                </th:block>
+                                <th:block th:unless="${product.inWishList}">
+                                    <button class="btn btn-secondary w-100" th:data-product-id="${product.id}">WISHLIST</button>
+                                </th:block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Product Section End -->
+<!-- Services Section End -->
+<div th:replace="fragments/footer::footer"></div>
+
+
+<!-- Search Begin -->
+<div class="search-model">
+    <div class="h-100 d-flex align-items-center justify-content-center">
+        <div class="search-close-switch">+</div>
+        <form class="search-model-form">
+            <input type="text" id="search-input" placeholder="Search here.....">
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="/js/wishlist.js"></script>
+</body>
+
+</html>

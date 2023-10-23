@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .flitter-btn{
+
+    font-size: 13px;
+    font-weight: 900;
+}
+    </style>
+</head>
+<body>
+<div th:replace="fragments/AdminHeader :: AdminHeader"></div>
+
+<div style="text-align: center;">
+    <h4 class="mt-5"><a href="/admin/orders">Orders</a></h4>
+    <form class="form-inline mt-3" th:action="@{/admin/orders/pages/1/5/search-orders-result}" method="get">
+        <div class="col-md-12 col-lg-12 col-xl-12">
+            <input style="max-width: 300px;" id="search"name="keyword" required class="form-control" placeholder="Enter username here">
+            <button class="btn btn-primary btn-success " type="submit" >Search</button>
+        </div>
+    </form>
+</div>
+
+
+<div class=" row-12 mt-4 border border-dark text-center p-3 m-2">
+    <form th:action="@{/admin/orders/pages/1/10/filter}" method="get">
+        <h4 class="p-2" style="font-weight: 700;">STATUS FILTER</h4>
+        <div class="row">
+            <div class="col-md-4">
+                <label><input type="radio" name="status" value="PENDING"> Pending</label>
+            </div>
+            <div class="col-md-4">
+                <label><input type="radio" name="status" value="CONFIRMED"> Confirmed</label>
+            </div>
+            <div class="col-md-4">
+                <label><input type="radio" name="status" value="SHIPPING"> Shipped</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <label><input type="radio" name="status" value="OUT_FOR_DELIVERY"> Out for Delivery</label>
+            </div>
+            <div class="col-md-4">
+                <label><input type="radio" name="status" value="DELIVERED"> Delivered</label>
+            </div>
+            <div class="col-lg-4">
+                <label><input type="radio" name="status" value="CANCELLED"> Cancelled</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <label><input type="radio" name="status" value="RETURNED"> Returned</label>
+            </div>
+            <div class="col-lg-4">
+                <label><input type="radio" name="status" value="CANCEL_REQUEST_SENT"> Cancel Request</label>
+            </div>
+            <div class="col-lg-4">
+                <label><input type="radio" name="status" value="RETURN_REQUEST_SENT"> Return Request</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <label><input type="radio" name="status" value="REFUNDED"> Refunded</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+    </form>
+</div>
+
+
+<div class="table-responsive py-4 my-5">
+    <table class="table ">
+        <thead class="thead-light">
+        <tr>
+            <th scope="col">customer email</th>
+            <th scope="col">order Id</th>
+            <th scope="col">ordered date</th>
+            <th>Payment method</th>
+            <th>payment status</th>
+            <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.customer.email}">Email</td>
+            <td th:text="${order.id}">order id</td>
+            <td th:text="${order.ordered_date}">ordered date</td>
+            <td th:text="${order.payment}"></td>
+            <td th:text="${order.status}"></td>
+            <td>
+                <a class="btn btn-sm btn-primary " th:href="@{/admin/order_details/{order_id}(order_id = ${order.id})}">check</a>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<nav class="my-5" aria-label="Page navigation example">
+    <div class="col-sm-2 page-item" th:if="${totalPages != null}">
+        Total orders : [[${totalItems}]]
+        <form id="pageSizeForm">
+            <label for="pageSize">Page Size:</label>
+            <select name="size" id="pageSize">
+                <option th:value="${5}">5</option>
+                <option th:value="${10}">10</option>
+                <option th:value="${25}">25</option>
+                <option th:value="${50}">50</option>
+                <option th:value="${100}">100</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Apply</button>
+
+        </form>
+    </div>
+    <ul class="pagination justify-content-center">
+        <!--when the user tries to press the previous button after reaching 0, then the button will be disabled-->
+        <li class="page-item" th:classappend="${currentPage > 1} ? '' : 'disabled'">
+            <a class="page-link" th:href="@{/admin/orders/pages/{page}(page=${currentPage - 1}, size=${size})}">Previous</a>
+        </li>
+        <!--to get 1, 2, 3-->
+        <span th:each="i : ${#numbers.sequence(1,totalPages)}">
+                    <li class="page-item" th:classappend="${i == currentPage}? 'active' : ''">
+                        <a class="page-link" th:href="@{/admin/orders/pages/{page}(page=${i}, size=${size})}">[[${i}]]</a>
+                    </li>
+             </span>
+        <!--when the user tries to press the next button after reaching the total page count, the button will be disabled-->
+        <li class="page-item" th:classappend="${currentPage < totalPages} ? '' : 'disabled'">
+            <a class="page-link" th:href="@{/admin/orders/pages/{page}(page=${currentPage + 1}, size=${size})}">Next</a>
+        </li>
+    </ul>
+
+</nav>
+
+<script>
+    document.getElementById("pageSizeForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var pageSize = document.getElementById("pageSize").value;
+        // Set the current page to 0 when changing the page size
+        var currentPage = 1;
+        window.location.href = "/admin/orders/pages/" + currentPage + "?size=" + pageSize;
+    });
+
+</script>
+<div th:replace="fragments/footer::footer"></div>
+
+</body>
+</html>
